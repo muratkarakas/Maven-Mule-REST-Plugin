@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -360,10 +361,9 @@ public class MuleRest {
 
 		try {
 
-			Attachment nameAttachment = new AttachmentBuilder().id("name").object(packageFile.getName()).contentDisposition(new ContentDisposition("form-data; name=\"name\"")).build();
-			Attachment fileAttachment = new Attachment("file", new FileInputStream(packageFile), new ContentDisposition("form-data; name=\"file\"; filename=\"" + packageFile.getName() + "\""));
+			Attachment fileAttachment = new Attachment(new FileInputStream(packageFile),new MultivaluedHashMap<String, String>());
 
-			MultipartBody multipartBody = new MultipartBody(Arrays.asList(fileAttachment, nameAttachment), MediaType.MULTIPART_FORM_DATA_TYPE, true);
+			MultipartBody multipartBody = new MultipartBody(Arrays.asList(fileAttachment), MediaType.MULTIPART_FORM_DATA_TYPE, true);
 
 			Response response = webClient.post(multipartBody);
 
