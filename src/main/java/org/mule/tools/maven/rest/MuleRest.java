@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Set;
@@ -360,6 +362,15 @@ public class MuleRest {
 		WebClient client = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
 
 		try {
+			
+			
+			Authenticator.setDefault (new Authenticator() {
+			    protected PasswordAuthentication getPasswordAuthentication() {
+			        return new PasswordAuthentication (username, password.toCharArray());
+			    }
+			});
+			
+			
 		    URL url = new URL(client.getCurrentURI().toString());
 		    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		    conn.setDoOutput(true);
