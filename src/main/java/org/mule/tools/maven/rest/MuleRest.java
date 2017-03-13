@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -362,10 +363,12 @@ public class MuleRest {
 		try {
 			client.getHeaders().add("Content-Type","application/octet-stream");
 
+			
+			Attachment att = new Attachment(new FileInputStream(packageFile), new MultivaluedHashMap<String, String>() );
 
 			 
 			logger.info(packageFile.getAbsolutePath());
-			Response response = client.post(packageFile);
+			Response response = client.post(att);
 
 			String responseObject = processResponse(response);
 
