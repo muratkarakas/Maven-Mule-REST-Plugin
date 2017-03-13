@@ -368,7 +368,8 @@ public class MuleRest {
 
 			 
 			logger.info(packageFile.getAbsolutePath());
-			Response response = client.post(att);
+			Response response = client.post(new MultipartBody(att));
+
 
 			String responseObject = processResponse(response);
 
