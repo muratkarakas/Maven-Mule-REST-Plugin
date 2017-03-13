@@ -357,6 +357,7 @@ public class MuleRest {
 	
 	public String restfullyDeployDomain(File packageFile, String serverId) throws IOException {
 		WebClient webClient = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
+		webClient.type(MediaType.APPLICATION_OCTET_STREAM);
 
 		try {
 
