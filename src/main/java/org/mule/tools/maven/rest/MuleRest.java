@@ -53,7 +53,7 @@ public class MuleRest {
 		for (String path : paths) {
 			webClient.path(path);
 		}
-		logger.info(webClient.getCurrentURI().toString());
+
 		return webClient;
 	}
 
@@ -357,8 +357,8 @@ public class MuleRest {
 	}
 	
 	
-	public String restfullyDeployDomain(File packageFile, String serverId) throws IOException {
-		WebClient client = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
+	public String restfullyDeployDomain(File packageFile,String domainName ,String serverId) throws IOException {
+		WebClient client = getWebClient("/servers/"+serverId+"/files/domains/"+domainName+".zip");
 
 		try {
 			
@@ -379,7 +379,6 @@ public class MuleRest {
 		    IOUtils.copy(new FileInputStream(packageFile), conn.getOutputStream());
 		    String result = IOUtils.toString(conn.getInputStream());
 			
-		    logger.info(result);
 		    return result;
 		} finally {
 			client.close();

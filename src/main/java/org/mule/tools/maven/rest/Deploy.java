@@ -189,7 +189,7 @@ public class Deploy extends AbstractMojo {
 				Set<String> serverIds = muleRest.restfullyGetServers(serverGroup);
 
 				for (String serverId : serverIds) {
-					muleRest.restfullyDeployDomain(getMuleZipFile(outputDirectory, finalName), serverId);
+					muleRest.restfullyDeployDomain(getMuleZipFile(outputDirectory, finalName),name, serverId);
 				}
 			}
 
