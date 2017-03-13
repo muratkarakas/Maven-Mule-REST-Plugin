@@ -356,16 +356,16 @@ public class MuleRest {
 	
 	
 	public String restfullyDeployDomain(File packageFile, String serverId) throws IOException {
-		WebClient webClient = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
-		webClient.type(MediaType.APPLICATION_OCTET_STREAM);
+		WebClient client = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
+		client.type("multipart/form-data");
 
 		try {
 
-			Attachment fileAttachment = new Attachment(new FileInputStream(packageFile),new MultivaluedHashMap<String, String>());
+			client.type("multipart/form-data");
 
-			MultipartBody multipartBody = new MultipartBody(Arrays.asList(fileAttachment), MediaType.APPLICATION_OCTET_STREAM_TYPE, true);
-
-			Response response = webClient.post(multipartBody);
+			 
+			// or just use a file
+			Response response = client.post(packageFile);
 
 			String responseObject = processResponse(response);
 
@@ -373,7 +373,7 @@ public class MuleRest {
 			JsonNode result = mapper.readTree(responseObject);
 			return result.path("versionId").asText();
 		} finally {
-			webClient.close();
+			client.close();
 		}
 	}
 
