@@ -24,6 +24,8 @@ import org.apache.cxf.transport.http.HTTPException;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +162,7 @@ public class MuleRest {
 			webClient.close();
 		}
 	}
+	private static final ObjectMapper SORTED_MAPPER = new ObjectMapper();
 
 	public String restfullyGetDeploymentIdByName(String name) throws IOException {
 		WebClient webClient = getWebClient("deployments");
@@ -170,6 +173,7 @@ public class MuleRest {
 
 			InputStream responseStream = (InputStream) response.getEntity();
 			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
+			logger.info("restfullyGetDeploymentIdByName: "+convertNode(jsonNode));
 			JsonNode deploymentsNode = jsonNode.path("data");
 			for (JsonNode deploymentNode : deploymentsNode) {
 				if (name.equals(deploymentNode.path("name").asText())) {
@@ -182,6 +186,12 @@ public class MuleRest {
 		}
 		return deploymentId;
 	}
+	
+	private String convertNode(final JsonNode node) throws JsonParseException, JsonMappingException, IOException {
+	    final Object obj = SORTED_MAPPER.treeToValue(node, Object.class);
+	    final String json = SORTED_MAPPER.writeValueAsString(obj);
+	    return json;
+	}
 
 	public String restfullyGetApplicationId(String name, String version) throws IOException {
 		WebClient webClient = getWebClient("repository");
@@ -192,6 +202,8 @@ public class MuleRest {
 
 			InputStream responseStream = (InputStream) response.getEntity();
 			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
+			logger.info("restfullyGetApplicationId: "+convertNode(jsonNode));
+
 			JsonNode applicationsNode = jsonNode.path("data");
 			for (JsonNode applicationNode : applicationsNode) {
 				if (name.equals(applicationNode.path("name").asText())) {
