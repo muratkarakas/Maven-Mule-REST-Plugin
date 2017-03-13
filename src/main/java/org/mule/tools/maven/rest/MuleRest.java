@@ -75,7 +75,7 @@ public class MuleRest {
 		}
 	}
 
-	public String restfullyCreateDeployment(String serverGroup, String name, String clusterName, String versionId) throws IOException {
+	public String restfullyCreateDeployment(String serverGroup, String name, String clusterName, String versionId,boolean isDomainDeployment) throws IOException {
 		Set<String> serversIds = new TreeSet<String>();
 		Set<String> clusterIds = new TreeSet<String>();
 		if (clusterName == null) {
@@ -117,7 +117,11 @@ public class MuleRest {
 				}
 				jGenerator.writeEndArray(); // ]
 			}
-			jGenerator.writeFieldName("applications"); // "applications" :
+			String deploymentType = "applications";
+			if(isDomainDeployment){
+				deploymentType = "domains";
+			}
+			jGenerator.writeFieldName(deploymentType); // "applications" :
 			jGenerator.writeStartArray(); // [
 			jGenerator.writeString(versionId); // "applicationId"
 			jGenerator.writeEndArray(); // ]

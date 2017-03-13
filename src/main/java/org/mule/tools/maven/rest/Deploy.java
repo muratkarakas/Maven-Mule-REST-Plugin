@@ -110,6 +110,12 @@ public class Deploy extends AbstractMojo {
 	 * @parameter expression="${deployCheckTimeoutMillis}"
 	 */
 	protected long deployCheckTimeoutMillis;
+	
+	
+	/**
+	 * @parameter expression="${isDomainDeployment}"
+	 */
+	protected boolean isDomainDeployment;
 
 	protected MuleRest muleRest;
 
@@ -150,12 +156,20 @@ public class Deploy extends AbstractMojo {
 		
 		try {
 
+			
+			
+			logger.info("deployCheckTimeoutMillis:"+deployCheckTimeoutMillis);
+			
+			
+
+			logger.info("isDomainDeployment:"+isDomainDeployment);
+			
 			validateProject(appDirectory);
 			muleRest = buildMuleRest();
 			String versionId = muleRest.restfullyUploadRepository(name, version, getMuleZipFile(outputDirectory, finalName));
-			String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, deploymentName, clusterName, versionId);
+			String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, deploymentName, clusterName, versionId,isDomainDeployment);
 			
-
+			
 
 			muleRest.restfullyDeployDeploymentById(deploymentId);
 
