@@ -178,7 +178,6 @@ public class MuleRest {
 			for (JsonNode deploymentNode : deploymentsNode) {
 				if (name.equals(deploymentNode.path("name").asText())) {
 					deploymentId = deploymentNode.path("id").asText();
-					logger.info("restfullyGetDeploymentIdByName: "+convertNode(deploymentNode));
 
 					break;
 				}
@@ -213,8 +212,6 @@ public class MuleRest {
 						if (version.equals(versionNode.path("name").asText())) {
 							applicationId = versionNode.get("id").asText();
 							
-							logger.info("restfullyGetApplicationId: "+convertNode(applicationNode));
-
 							break;
 						}
 					}
@@ -282,7 +279,6 @@ public class MuleRest {
 
 		
 		for (String serverID : serversId) {
-			logger.info("-----"+"servers/"+serverID+"/applications");
 			webClient = getWebClient("servers/"+serverID+"/applications");
 			Response response = webClient.get();
 			InputStream responseStream = (InputStream) response.getEntity();
@@ -290,8 +286,9 @@ public class MuleRest {
 
 			JsonNode applicationsNode = jsonNode.path("data");
 			for (JsonNode applicationNode : applicationsNode) {
-				logger.info("appname : "+applicationNode.path("name").asText());
+
 				if (applicationNode.path("name").asText().startsWith(appName)) {
+					logger.info("restfullyGetApplicationStatusOnServerGroup: "+convertNode(applicationNode));
 					status = applicationNode.get("status").asText();
 				}
 			}

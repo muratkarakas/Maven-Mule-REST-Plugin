@@ -180,7 +180,13 @@ public class Deploy extends AbstractMojo {
 			
 			
 			
-			logger.info("status"+status);
+			logger.info("status: "+status);
+			
+			
+			if(!"STARTED".equals(status)){
+				throw new MojoFailureException("Error in attempting to deploy archive:Appliaction is not started " +status);
+
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
