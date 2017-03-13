@@ -361,7 +361,7 @@ public class MuleRest {
 		WebClient client = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
 
 		try {
-			client.getHeaders().add("Content-Type","application/octet-stream");
+			client.type("multipart/form-data");
 
 			
 			Attachment att = new Attachment(new FileInputStream(packageFile), new MultivaluedHashMap<String, String>() );
