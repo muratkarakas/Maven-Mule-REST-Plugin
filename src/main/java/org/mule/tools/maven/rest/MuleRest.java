@@ -173,11 +173,12 @@ public class MuleRest {
 
 			InputStream responseStream = (InputStream) response.getEntity();
 			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
-			logger.info("restfullyGetDeploymentIdByName: "+convertNode(jsonNode));
 			JsonNode deploymentsNode = jsonNode.path("data");
 			for (JsonNode deploymentNode : deploymentsNode) {
 				if (name.equals(deploymentNode.path("name").asText())) {
 					deploymentId = deploymentNode.path("id").asText();
+					logger.info("restfullyGetDeploymentIdByName: "+convertNode(deploymentNode));
+
 					break;
 				}
 			}
@@ -202,7 +203,6 @@ public class MuleRest {
 
 			InputStream responseStream = (InputStream) response.getEntity();
 			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
-			logger.info("restfullyGetApplicationId: "+convertNode(jsonNode));
 
 			JsonNode applicationsNode = jsonNode.path("data");
 			for (JsonNode applicationNode : applicationsNode) {
@@ -211,6 +211,9 @@ public class MuleRest {
 					for (JsonNode versionNode : versionsNode) {
 						if (version.equals(versionNode.path("name").asText())) {
 							applicationId = versionNode.get("id").asText();
+							
+							logger.info("restfullyGetApplicationId: "+convertNode(applicationNode));
+
 							break;
 						}
 					}
