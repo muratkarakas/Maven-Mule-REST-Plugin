@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.nicholasastuart</groupId>
-	<artifactId>mule-mmc-rest-plugin</artifactId>
+	<artifactId>mule-mmc-rest-plugin-extended</artifactId>
 	<version>1.2.2-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Mule MMC REST Plugin</name>
@@ -77,7 +77,7 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 			<version>2.7.7</version>
-		</dependency>
+		</dependency> 
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock</artifactId>
@@ -90,7 +90,7 @@
 			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+	</dependencies> 
 
 	<build>
 		<plugins>

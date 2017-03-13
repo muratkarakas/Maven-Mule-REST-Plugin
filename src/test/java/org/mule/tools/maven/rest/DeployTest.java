@@ -1,5 +1,15 @@
 package org.mule.tools.maven.rest;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.net.URL;
 
@@ -10,9 +20,7 @@ import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.mockito.Mockito.*;
-
+ 
 public class DeployTest {
 	private static final String VERSION_ID = "7959";
 	private static final String DEPLOYMENT_ID = "1234";

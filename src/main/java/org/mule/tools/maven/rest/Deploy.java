@@ -136,6 +136,7 @@ public class Deploy extends AbstractMojo {
 		}
 
 		try {
+			logger.info("Plugin Modified");
 			validateProject(appDirectory);
 			muleRest = buildMuleRest();
 			String versionId = muleRest.restfullyUploadRepository(name, version, getMuleZipFile(outputDirectory, finalName));

@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -33,8 +33,6 @@ import java.net.URL;
 import java.util.Set;
 import java.util.UUID;
 
-import junit.framework.Assert;
-
 import org.apache.cxf.helpers.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -44,6 +42,8 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import junit.framework.Assert;
 
 public class MuleRestTest {
 
