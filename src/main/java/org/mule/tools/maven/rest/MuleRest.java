@@ -75,7 +75,7 @@ public class MuleRest {
 		}
 	}
 
-	public String restfullyCreateDeployment(String serverGroup, String name, String clusterName, String versionId,boolean isDomainDeployment) throws IOException {
+	public String restfullyCreateDeployment(String serverGroup, String name, String clusterName, String versionId) throws IOException {
 		Set<String> serversIds = new TreeSet<String>();
 		Set<String> clusterIds = new TreeSet<String>();
 		if (clusterName == null) {
@@ -117,11 +117,7 @@ public class MuleRest {
 				}
 				jGenerator.writeEndArray(); // ]
 			}
-			String deploymentType = "applications";
-			if(isDomainDeployment){
-				deploymentType = "domains";
-			}
-			jGenerator.writeFieldName(deploymentType); // "applications" :
+			jGenerator.writeFieldName("applications"); // "applications" :
 			jGenerator.writeStartArray(); // [
 			jGenerator.writeString(versionId); // "applicationId"
 			jGenerator.writeEndArray(); // ]
@@ -255,34 +251,13 @@ public class MuleRest {
 	
 	
 	public final String restfullyGetApplicationStatusOnServerGroup(String serverGroup, String appName) throws IOException {
-		Set<String> serversId = new TreeSet<String>();
-		WebClient webClient = getWebClient("servers");
-
-		try {
-			Response response = webClient.get();
-
-			InputStream responseStream = (InputStream) response.getEntity();
-			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
-			JsonNode serversNode = jsonNode.path("data");
-			for (JsonNode serverNode : serversNode) {
-				String serverId = serverNode.path("id").asText();
-
-				JsonNode groupsNode = serverNode.path("groups");
-				for (JsonNode groupNode : groupsNode) {
-					if (serverGroup.equals(groupNode.path("name").asText())) {
-						serversId.add(serverId);
-					}
-				}
-			}
-		} finally {
-			webClient.close();
-		}
+		Set<String> serversId = restfullyGetServers(serverGroup);
 
 		String status = "NOT_AVAILABLE";
 
 		
 		for (String serverID : serversId) {
-			webClient = getWebClient("servers/"+serverID+"/applications");
+			WebClient webClient = getWebClient("servers/"+serverID+"/applications");
 			Response response = webClient.get();
 			InputStream responseStream = (InputStream) response.getEntity();
 			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
@@ -365,6 +340,30 @@ public class MuleRest {
 			Attachment fileAttachment = new Attachment("file", new FileInputStream(packageFile), new ContentDisposition("form-data; name=\"file\"; filename=\"" + packageFile.getName() + "\""));
 
 			MultipartBody multipartBody = new MultipartBody(Arrays.asList(fileAttachment, nameAttachment, versionAttachment), MediaType.MULTIPART_FORM_DATA_TYPE, true);
+
+			Response response = webClient.post(multipartBody);
+
+			String responseObject = processResponse(response);
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode result = mapper.readTree(responseObject);
+			return result.path("versionId").asText();
+		} finally {
+			webClient.close();
+		}
+	}
+	
+	
+	public String restfullyDeployDomain(File packageFile, String serverId) throws IOException {
+		WebClient webClient = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
+		webClient.type("multipart/form-data");
+
+		try {
+
+			Attachment nameAttachment = new AttachmentBuilder().id("name").object(packageFile.getName()).contentDisposition(new ContentDisposition("form-data; name=\"name\"")).build();
+			Attachment fileAttachment = new Attachment("file", new FileInputStream(packageFile), new ContentDisposition("form-data; name=\"file\"; filename=\"" + packageFile.getName() + "\""));
+
+			MultipartBody multipartBody = new MultipartBody(Arrays.asList(fileAttachment, nameAttachment), MediaType.MULTIPART_FORM_DATA_TYPE, true);
 
 			Response response = webClient.post(multipartBody);
 
