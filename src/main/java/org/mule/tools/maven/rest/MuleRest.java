@@ -378,7 +378,9 @@ public class MuleRest {
 		    conn.setRequestProperty("Content-Type", "application/octet-stream");
 		    IOUtils.copy(new FileInputStream(packageFile), conn.getOutputStream());
 		    String result = IOUtils.toString(conn.getInputStream());
-			return result;
+			
+		    logger.info(result);
+		    return result;
 		} finally {
 			client.close();
 		}
