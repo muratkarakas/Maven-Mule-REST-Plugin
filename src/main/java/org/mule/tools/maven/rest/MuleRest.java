@@ -51,7 +51,6 @@ public class MuleRest {
 		for (String path : paths) {
 			webClient.path(path);
 		}
-		logger.info(webClient.getCurrentURI().toString());
 		return webClient;
 	}
 
