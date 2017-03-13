@@ -364,7 +364,7 @@ public class MuleRest {
 
 
 			 
-			// or just use a file
+			logger.info(packageFile.getAbsolutePath());
 			Response response = client.post(packageFile);
 
 			String responseObject = processResponse(response);
