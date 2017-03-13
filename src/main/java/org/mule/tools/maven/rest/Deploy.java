@@ -142,14 +142,15 @@ public class Deploy extends AbstractMojo {
 			String versionId = muleRest.restfullyUploadRepository(name, version, getMuleZipFile(outputDirectory, finalName));
 			String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, deploymentName, clusterName, versionId);
 			
+
+
+			muleRest.restfullyDeployDeploymentById(deploymentId);
 			logger.info("Start DEBUG data");
 			Thread.sleep(45000);
 			
 			muleRest.restfullyGetDeploymentIdByName(deploymentName);
 			muleRest.restfullyGetApplicationId(name,version);
 			logger.info("END DEBUG data");
-
-			muleRest.restfullyDeployDeploymentById(deploymentId);
 		} catch (Exception e) {
 			throw new MojoFailureException("Error in attempting to deploy archive: " + e.toString(), e);
 		}
