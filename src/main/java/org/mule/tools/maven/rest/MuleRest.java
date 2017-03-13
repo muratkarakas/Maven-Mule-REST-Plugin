@@ -5,14 +5,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -361,21 +360,14 @@ public class MuleRest {
 		WebClient client = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
 
 		try {
-			client.type("multipart/form-data");
-
-			
-			Attachment att = new Attachment(new FileInputStream(packageFile), new MultivaluedHashMap<String, String>() );
-
-			 
-			logger.info(packageFile.getAbsolutePath());
-			Response response = client.post(new MultipartBody(att));
-
-
-			String responseObject = processResponse(response);
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode result = mapper.readTree(responseObject);
-			return result.path("versionId").asText();
+		    URL url = new URL(client.getCurrentURI().toString());
+		    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		    conn.setDoOutput(true);
+		    conn.setRequestMethod("POST");
+		    conn.setRequestProperty("Content-Type", "application/octet-stream");
+		    IOUtils.copy(new FileInputStream(packageFile), conn.getOutputStream());
+		    String result = IOUtils.toString(conn.getInputStream());
+			return result;
 		} finally {
 			client.close();
 		}
