@@ -249,6 +249,56 @@ public class MuleRest {
 		}
 		return serverGroupId;
 	}
+	
+	
+	
+	
+	public final String restfullyGetApplicationStatusOnServerGroup(String serverGroup, String appName) throws IOException {
+		Set<String> serversId = new TreeSet<String>();
+		WebClient webClient = getWebClient("servers");
+
+		try {
+			Response response = webClient.get();
+
+			InputStream responseStream = (InputStream) response.getEntity();
+			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
+			JsonNode serversNode = jsonNode.path("data");
+			for (JsonNode serverNode : serversNode) {
+				String serverId = serverNode.path("id").asText();
+
+				JsonNode groupsNode = serverNode.path("groups");
+				for (JsonNode groupNode : groupsNode) {
+					if (serverGroup.equals(groupNode.path("name").asText())) {
+						serversId.add(serverId);
+					}
+				}
+			}
+		} finally {
+			webClient.close();
+		}
+
+		String status = "NOT_AVAILABLE";
+
+		
+		for (String serverID : serversId) {
+			webClient = getWebClient("servers/"+serverID+"/aplications");
+			Response response = webClient.get();
+			InputStream responseStream = (InputStream) response.getEntity();
+			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
+
+			JsonNode applicationsNode = jsonNode.path("data");
+			for (JsonNode applicationNode : applicationsNode) {
+				if (appName.equals(applicationNode.path("name").asText())) {
+					status = applicationNode.get("STATUS").asText();
+				}
+			}
+		}
+		
+		
+		
+		return status ;
+		
+	}
 
 	public Set<String> restfullyGetServers(String serverGroup) throws IOException {
 		Set<String> serversId = new TreeSet<String>();

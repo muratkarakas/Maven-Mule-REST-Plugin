@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Set;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -150,6 +151,11 @@ public class Deploy extends AbstractMojo {
 			
 			muleRest.restfullyGetDeploymentIdByName(deploymentName);
 			muleRest.restfullyGetApplicationId(name,version);
+			
+			
+			String status = muleRest.restfullyGetApplicationStatusOnServerGroup(serverGroup,name);
+			logger.info("status"+status);
+			
 			logger.info("END DEBUG data");
 		} catch (Exception e) {
 			throw new MojoFailureException("Error in attempting to deploy archive: " + e.toString(), e);
