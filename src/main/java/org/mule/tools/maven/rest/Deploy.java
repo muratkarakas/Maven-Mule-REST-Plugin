@@ -103,15 +103,12 @@ public class Deploy extends AbstractMojo {
 	 * @parameter expression="${clusterName}"
 	 */
 	protected String clusterName;
-	
-	
-	
+
 	/**
 	 * @parameter expression="${deployCheckTimeoutMillis}"
 	 */
 	protected long deployCheckTimeoutMillis;
-	
-	
+
 	/**
 	 * @parameter expression="${isDomainDeployment}"
 	 */
@@ -149,59 +146,53 @@ public class Deploy extends AbstractMojo {
 			throw new MojoFailureException("serverGroup not set.");
 		}
 
-		
-		if(deployCheckTimeoutMillis == 0){
+		if (deployCheckTimeoutMillis == 0) {
 			deployCheckTimeoutMillis = 30000l;
 		}
-		
+
 		try {
 
-			
-			
-			logger.info("deployCheckTimeoutMillis:"+deployCheckTimeoutMillis);
-			
-			
-
-			logger.info("isDomainDeployment:"+isDomainDeployment);
-			
 			validateProject(appDirectory);
 			muleRest = buildMuleRest();
-			String versionId = muleRest.restfullyUploadRepository(name, version, getMuleZipFile(outputDirectory, finalName));
-			String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, deploymentName, clusterName, versionId,isDomainDeployment);
-			
-			
 
-			muleRest.restfullyDeployDeploymentById(deploymentId);
+			if (!isDomainDeployment) {
 
+				String versionId = muleRest.restfullyUploadRepository(name, version,getMuleZipFile(outputDirectory, finalName));
+				String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, deploymentName, clusterName,versionId);
 
-			
-			
-			int retryCount = (int) (deployCheckTimeoutMillis/5000);
-			
-			
-			String status = "NOT_AVAILABLE";
-			
-			
-			
-			
-			do {
-				
-				Thread.sleep(5000);
-				status = muleRest.restfullyGetApplicationStatusOnServerGroup(serverGroup,name);
-				retryCount--;
-			} while (!"STARTED".equals(status) && retryCount>=0);
-			
-			
-			
-			
-			logger.info("status: "+status);
-			
-			
-			if(!"STARTED".equals(status)){
-				throw new MojoFailureException("Error in attempting to deploy archive:Appliaction is not started " +status);
+				muleRest.restfullyDeployDeploymentById(deploymentId);
 
+				if (!isDomainDeployment) {
+
+					int retryCount = (int) (deployCheckTimeoutMillis / 5000);
+
+					String status = "NOT_AVAILABLE";
+
+					do {
+
+						Thread.sleep(5000);
+						status = muleRest.restfullyGetApplicationStatusOnServerGroup(serverGroup, name);
+						retryCount--;
+					} while (!"STARTED".equals(status) && retryCount >= 0);
+
+					logger.info("status: " + status);
+
+					if (!"STARTED".equals(status)) {
+						throw new MojoFailureException(
+								"Error in attempting to deploy archive:Appliaction is not started " + status);
+
+					}
+				}
+
+			} else {
+
+				Set<String> serverIds = muleRest.restfullyGetServers(serverGroup);
+
+				for (String serverId : serverIds) {
+					muleRest.restfullyDeployDomain(getMuleZipFile(outputDirectory, finalName), serverId);
+				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new MojoFailureException("Error in attempting to deploy archive: " + e.toString(), e);
@@ -211,7 +202,8 @@ public class Deploy extends AbstractMojo {
 	protected File getMuleZipFile(File outputDirectory, String filename) throws MojoFailureException {
 		File file = new File(outputDirectory, filename + ".zip");
 		if (!file.exists()) {
-			throw new MojoFailureException("There no application ZIP file generated : check that you have configured the maven-mule-plugin to generated the this file");
+			throw new MojoFailureException(
+					"There no application ZIP file generated : check that you have configured the maven-mule-plugin to generated the this file");
 		}
 		return file;
 	}
