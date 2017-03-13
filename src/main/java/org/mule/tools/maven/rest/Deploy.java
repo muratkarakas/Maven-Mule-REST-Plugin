@@ -103,6 +103,13 @@ public class Deploy extends AbstractMojo {
 	 * @parameter expression="${clusterName}"
 	 */
 	protected String clusterName;
+	
+	
+	
+	/**
+	 * @parameter expression="${deployCheckTimeoutMillis}"
+	 */
+	protected long deployCheckTimeoutMillis;
 
 	protected MuleRest muleRest;
 
@@ -136,6 +143,11 @@ public class Deploy extends AbstractMojo {
 			throw new MojoFailureException("serverGroup not set.");
 		}
 
+		
+		if(deployCheckTimeoutMillis == 0){
+			deployCheckTimeoutMillis = 30000l;
+		}
+		
 		try {
 			logger.info("Plugin Modified");
 			validateProject(appDirectory);
@@ -146,17 +158,30 @@ public class Deploy extends AbstractMojo {
 
 
 			muleRest.restfullyDeployDeploymentById(deploymentId);
-			logger.info("Start DEBUG data");
-			Thread.sleep(15000);
-			
-			muleRest.restfullyGetDeploymentIdByName(deploymentName);
-			muleRest.restfullyGetApplicationId(name,version);
+
+
 			
 			
-			String status = muleRest.restfullyGetApplicationStatusOnServerGroup(serverGroup,name);
+			int retryCount = (int) (deployCheckTimeoutMillis/5000);
+			
+			
+			String status = "NOT_AVAILABLE";
+			
+			
+			
+			
+			do {
+				
+				Thread.sleep(5000);
+				status = muleRest.restfullyGetApplicationStatusOnServerGroup(serverGroup,name);
+				retryCount--;
+			} while (!"STARTED".equals(status) && retryCount>=0);
+			
+			
+			
+			
 			logger.info("status"+status);
 			
-			logger.info("END DEBUG data");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new MojoFailureException("Error in attempting to deploy archive: " + e.toString(), e);
