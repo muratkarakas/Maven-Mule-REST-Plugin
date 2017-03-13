@@ -360,6 +360,7 @@ public class MuleRest {
 		WebClient client = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
 
 		try {
+			client.getHeaders().add("Content-Type","application/octet-stream");
 
 
 			 
