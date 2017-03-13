@@ -51,6 +51,7 @@ public class MuleRest {
 		for (String path : paths) {
 			webClient.path(path);
 		}
+		logger.info(webClient.getCurrentURI().toString());
 		return webClient;
 	}
 
@@ -281,15 +282,17 @@ public class MuleRest {
 
 		
 		for (String serverID : serversId) {
-			webClient = getWebClient("servers/"+serverID+"/aplications");
+			logger.info("-----"+"servers/"+serverID+"/applications");
+			webClient = getWebClient("servers/"+serverID+"/applications");
 			Response response = webClient.get();
 			InputStream responseStream = (InputStream) response.getEntity();
 			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
 
 			JsonNode applicationsNode = jsonNode.path("data");
 			for (JsonNode applicationNode : applicationsNode) {
-				if (appName.equals(applicationNode.path("name").asText())) {
-					status = applicationNode.get("STATUS").asText();
+				logger.info("appname : "+applicationNode.path("name").asText());
+				if (applicationNode.path("name").asText().startsWith(appName)) {
+					status = applicationNode.get("status").asText();
 				}
 			}
 		}

@@ -147,7 +147,7 @@ public class Deploy extends AbstractMojo {
 
 			muleRest.restfullyDeployDeploymentById(deploymentId);
 			logger.info("Start DEBUG data");
-			Thread.sleep(45000);
+			Thread.sleep(15000);
 			
 			muleRest.restfullyGetDeploymentIdByName(deploymentName);
 			muleRest.restfullyGetApplicationId(name,version);
@@ -158,6 +158,7 @@ public class Deploy extends AbstractMojo {
 			
 			logger.info("END DEBUG data");
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new MojoFailureException("Error in attempting to deploy archive: " + e.toString(), e);
 		}
 	}
