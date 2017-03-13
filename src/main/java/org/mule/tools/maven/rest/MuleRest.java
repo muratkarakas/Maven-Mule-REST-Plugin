@@ -52,6 +52,7 @@ public class MuleRest {
 		for (String path : paths) {
 			webClient.path(path);
 		}
+		logger.info(webClient.getCurrentURI().toString());
 		return webClient;
 	}
 
@@ -357,11 +358,9 @@ public class MuleRest {
 	
 	public String restfullyDeployDomain(File packageFile, String serverId) throws IOException {
 		WebClient client = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
-		client.type("multipart/form-data");
 
 		try {
 
-			client.type("multipart/form-data");
 
 			 
 			// or just use a file
