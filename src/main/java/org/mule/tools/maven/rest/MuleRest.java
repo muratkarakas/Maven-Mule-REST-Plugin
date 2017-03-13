@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.Authenticator;
 import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Set;
@@ -17,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.cxf.helpers.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -364,17 +363,18 @@ public class MuleRest {
 		try {
 			
 			
-			Authenticator.setDefault (new Authenticator() {
-			    protected PasswordAuthentication getPasswordAuthentication() {
-			        return new PasswordAuthentication (username, password.toCharArray());
-			    }
-			});
 			
+
 			
 		    URL url = new URL(client.getCurrentURI().toString());
 		    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		    conn.setDoOutput(true);
 		    conn.setRequestMethod("POST");
+		    
+		    String userpass = username + ":" + password;
+		    String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
+		    conn.setRequestProperty ("Authorization", basicAuth);
+		    
 		    conn.setRequestProperty("Content-Type", "application/octet-stream");
 		    IOUtils.copy(new FileInputStream(packageFile), conn.getOutputStream());
 		    String result = IOUtils.toString(conn.getInputStream());
