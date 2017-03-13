@@ -357,13 +357,12 @@ public class MuleRest {
 	
 	public String restfullyDeployDomain(File packageFile, String serverId) throws IOException {
 		WebClient webClient = getWebClient("/servers/"+serverId+"/files/domains/"+packageFile.getName());
-		webClient.type("multipart/form-data");
 
 		try {
 
 			Attachment fileAttachment = new Attachment(new FileInputStream(packageFile),new MultivaluedHashMap<String, String>());
 
-			MultipartBody multipartBody = new MultipartBody(Arrays.asList(fileAttachment), MediaType.MULTIPART_FORM_DATA_TYPE, true);
+			MultipartBody multipartBody = new MultipartBody(Arrays.asList(fileAttachment), MediaType.APPLICATION_OCTET_STREAM_TYPE, true);
 
 			Response response = webClient.post(multipartBody);
 
