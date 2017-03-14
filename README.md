@@ -1,3 +1,11 @@
+#Extra Features Over Orginal Plugin
+
+Domain deployment option
+
+Application status check after deployment with timeout settings(It waits for STARTED status of deployed application).
+
+
+
 #Maven Mule REST Plugin#
 
 This is a project to utilize the RESTful interface that is provided for the Management console on Mule ESB's Enterprise Edition. 
@@ -93,4 +101,16 @@ In order to post to the Mule Repository, you need only these permissions:
 	<td>
 		The username to the Mule MMC API.
 	<td>
+<tr>
+	<td>
+		deployCheckTimeoutMillis
+	<td>
+		Check for application status(STARTED) in every 5000 millis up to given millis (default:30000)
+	<td>
+<tr>
+	<td>
+		isDomainDeployment
+	<td>
+		Option flag for domain deployment
+	<td>	
 </table> 
